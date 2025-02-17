@@ -11,6 +11,7 @@ interface Advisor {
   id: string;
   name: string;
   isAvailable: boolean;
+  roomNumber: string;
 }
 
 interface ScheduleSettings {
@@ -37,6 +38,7 @@ export const SettingsDialog = ({
   const [tempMaxSize, setTempMaxSize] = useState(maxQueueSize);
   const [tempSchedule, setTempSchedule] = useState<ScheduleSettings>(schedule);
   const [newAdvisorName, setNewAdvisorName] = useState("");
+  const [newRoomNumber, setNewRoomNumber] = useState("");
   const { toast } = useToast();
 
   const handleSave = () => {
@@ -48,7 +50,7 @@ export const SettingsDialog = ({
   };
 
   const addAdvisor = () => {
-    if (!newAdvisorName.trim()) return;
+    if (!newAdvisorName.trim() || !newRoomNumber.trim()) return;
     
     setTempSchedule(prev => ({
       ...prev,
@@ -57,11 +59,13 @@ export const SettingsDialog = ({
         {
           id: crypto.randomUUID(),
           name: newAdvisorName.trim(),
+          roomNumber: newRoomNumber.trim(),
           isAvailable: true
         }
       ]
     }));
     setNewAdvisorName("");
+    setNewRoomNumber("");
   };
 
   const removeAdvisor = (id: string) => {
@@ -176,13 +180,21 @@ export const SettingsDialog = ({
             <h4 className="font-medium">Advisors</h4>
             <div className="space-y-4">
               <div className="flex gap-2">
-                <Input
-                  placeholder="Enter advisor name"
-                  value={newAdvisorName}
-                  onChange={(e) => setNewAdvisorName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && addAdvisor()}
-                />
-                <Button onClick={addAdvisor} size="sm">
+                <div className="flex-1 space-y-2">
+                  <Input
+                    placeholder="Enter advisor name"
+                    value={newAdvisorName}
+                    onChange={(e) => setNewAdvisorName(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && addAdvisor()}
+                  />
+                  <Input
+                    placeholder="Enter room number"
+                    value={newRoomNumber}
+                    onChange={(e) => setNewRoomNumber(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && addAdvisor()}
+                  />
+                </div>
+                <Button onClick={addAdvisor} size="sm" className="h-auto">
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -193,7 +205,10 @@ export const SettingsDialog = ({
                     key={advisor.id}
                     className="flex items-center justify-between p-2 border rounded-md"
                   >
-                    <span className="font-medium truncate mr-2">{advisor.name}</span>
+                    <div className="flex flex-col mr-2">
+                      <span className="font-medium truncate">{advisor.name}</span>
+                      <span className="text-sm text-gray-500">Room {advisor.roomNumber}</span>
+                    </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <Button
                         variant={advisor.isAvailable ? "default" : "secondary"}

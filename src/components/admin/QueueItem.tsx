@@ -13,7 +13,7 @@ interface QueueItemProps {
   position: number;
   estimatedWaitTime?: number;
   assignedAdvisor?: string;
-  availableAdvisors: { name: string; isAvailable: boolean }[];
+  availableAdvisors: { name: string; isAvailable: boolean; roomNumber: string }[];
   onRemove: (id: number) => void;
   onChangeAdvisor: (id: number, newAdvisor: string) => void;
 }
@@ -31,6 +31,8 @@ export const QueueItemCard = ({
   onRemove,
   onChangeAdvisor,
 }: QueueItemProps) => {
+  const assignedAdvisorDetails = availableAdvisors.find(a => a.name === assignedAdvisor);
+
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between">
@@ -54,7 +56,7 @@ export const QueueItemCard = ({
                 Est. Wait: ~{estimatedWaitTime} minutes
               </span>
             )}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-col gap-1 shrink-0">
               <Select
                 value={assignedAdvisor}
                 onValueChange={(value) => onChangeAdvisor(id, value)}
@@ -69,11 +71,17 @@ export const QueueItemCard = ({
                       value={advisor.name}
                       disabled={!advisor.isAvailable && advisor.name !== assignedAdvisor}
                     >
-                      {advisor.name} {!advisor.isAvailable && advisor.name !== assignedAdvisor && " (Unavailable)"}
+                      {advisor.name} - Room {advisor.roomNumber}
+                      {!advisor.isAvailable && advisor.name !== assignedAdvisor && " (Unavailable)"}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {assignedAdvisorDetails && (
+                <span className="text-sm text-gray-600">
+                  Room {assignedAdvisorDetails.roomNumber}
+                </span>
+              )}
             </div>
           </div>
         </div>

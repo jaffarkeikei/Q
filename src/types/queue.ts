@@ -14,6 +14,7 @@ export interface Advisor {
   id: string;
   name: string;
   isAvailable: boolean;
+  roomNumber: string;
 }
 
 export interface ScheduleSettings {
