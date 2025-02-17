@@ -94,19 +94,6 @@ yarn dev
    - Change advisor assignments
    - Monitor queue statistics
 
-## Project Structure
-
-```
-src/
-├── components/         # React components
-│   ├── ui/            # UI components from shadcn/ui
-│   └── ...           
-├── hooks/             # Custom React hooks
-├── pages/             # Page components
-├── types/             # TypeScript type definitions
-└── lib/              # Utility functions and configurations
-```
-
 ## Contributing
 
 1. Fork the repository
@@ -118,10 +105,4 @@ src/
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Built with [Lovable](https://lovable.dev)
-- UI components from [shadcn/ui](https://ui.shadcn.com/)
-- Icons from [Lucide](https://lucide.dev/)
 
