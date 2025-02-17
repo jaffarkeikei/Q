@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Settings, Plus, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Advisor {
   id: string;
@@ -37,10 +37,14 @@ export const SettingsDialog = ({
   const [tempMaxSize, setTempMaxSize] = useState(maxQueueSize);
   const [tempSchedule, setTempSchedule] = useState<ScheduleSettings>(schedule);
   const [newAdvisorName, setNewAdvisorName] = useState("");
+  const { toast } = useToast();
 
   const handleSave = () => {
     onMaxQueueSizeChange(tempMaxSize);
     onScheduleChange(tempSchedule);
+    toast({
+      title: "Settings saved",
+    });
   };
 
   const addAdvisor = () => {
