@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Download } from "lucide-react";
+import { Download, Play, Pause } from "lucide-react";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { QueueItemCard } from "@/components/admin/QueueItem";
 import { AddStudentDialog } from "@/components/admin/AddStudentDialog";
@@ -20,6 +19,7 @@ const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isQueueOpen, setIsQueueOpen] = useState(true);
   const [newStudent, setNewStudent] = useState({
     name: "",
     studentNumber: "",
@@ -196,6 +196,16 @@ const Admin = () => {
     });
   };
 
+  const toggleQueue = () => {
+    setIsQueueOpen(prev => !prev);
+    toast({
+      title: isQueueOpen ? "Queue Closed" : "Queue Opened",
+      description: isQueueOpen 
+        ? "Students can no longer join the queue" 
+        : "Students can now join the queue",
+    });
+  };
+
   if (!isLoggedIn) {
     return (
       <LoginForm
@@ -212,8 +222,32 @@ const Admin = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Queue Management</h1>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold">Queue Management</h1>
+            <p className="text-sm text-gray-500">
+              Status: <span className={isQueueOpen ? "text-green-600" : "text-red-600"}>
+                {isQueueOpen ? "Open" : "Closed"}
+              </span>
+            </p>
+          </div>
           <div className="flex gap-2">
+            <Button
+              variant={isQueueOpen ? "destructive" : "outline"}
+              onClick={toggleQueue}
+              className="flex items-center gap-2"
+            >
+              {isQueueOpen ? (
+                <>
+                  <Pause className="h-4 w-4" />
+                  Stop Queue
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4" />
+                  Start Queue
+                </>
+              )}
+            </Button>
             <AddStudentDialog
               newStudent={newStudent}
               onNewStudentChange={setNewStudent}
