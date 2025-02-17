@@ -2,21 +2,23 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
 interface JoinQueueFormProps {
-  onJoin: (name: string, studentNumber: string) => void;
+  onJoin: (name: string, studentNumber: string, reason: string) => void;
 }
 
 const JoinQueueForm = ({ onJoin }: JoinQueueFormProps) => {
   const [name, setName] = useState("");
   const [studentNumber, setStudentNumber] = useState("");
+  const [reason, setReason] = useState("");
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name || !studentNumber) {
+    if (!name || !studentNumber || !reason) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -34,9 +36,10 @@ const JoinQueueForm = ({ onJoin }: JoinQueueFormProps) => {
       return;
     }
 
-    onJoin(name, studentNumber);
+    onJoin(name, studentNumber, reason);
     setName("");
     setStudentNumber("");
+    setReason("");
   };
 
   return (
@@ -58,6 +61,15 @@ const JoinQueueForm = ({ onJoin }: JoinQueueFormProps) => {
           type="text"
           inputMode="numeric"
           pattern="[0-9]*"
+        />
+      </div>
+      <div>
+        <Textarea
+          placeholder="Reason for Visit"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          className="bg-white/90 border-queue-border resize-none"
+          rows={3}
         />
       </div>
       <Button type="submit" className="w-full bg-queue-accent hover:bg-queue-accent/90">

@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 interface QueueUser {
   name: string;
   studentNumber: string;
+  reason: string;
   position: number;
   joinedAt: Date;
 }
@@ -16,12 +17,13 @@ const Index = () => {
   const [queueLength, setQueueLength] = useState(15); // Simulated queue length
   const { toast } = useToast();
 
-  const handleJoinQueue = (name: string, studentNumber: string) => {
+  const handleJoinQueue = (name: string, studentNumber: string, reason: string) => {
     const position = Math.floor(Math.random() * 5) + 1; // Simulated position (1-5)
     
     setCurrentUser({
       name,
       studentNumber,
+      reason,
       position,
       joinedAt: new Date(),
     });
@@ -49,9 +51,14 @@ const Index = () => {
               estimatedTime={estimatedWaitTime}
               totalInQueue={queueLength}
             />
-            <p className="text-center text-sm text-gray-500 mt-4">
-              Please wait to be called. Make sure to have your student ID ready.
-            </p>
+            <div className="text-center space-y-2">
+              <p className="text-sm text-gray-500">
+                Reason for visit: <span className="font-medium">{currentUser.reason}</span>
+              </p>
+              <p className="text-sm text-gray-500">
+                Please wait to be called. Make sure to have your student ID ready.
+              </p>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
