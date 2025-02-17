@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { X, User, Clock, Download, UserPlus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import { Download } from "lucide-react";
+import { LoginForm } from "@/components/admin/LoginForm";
+import { QueueItemCard } from "@/components/admin/QueueItem";
+import { AddStudentDialog } from "@/components/admin/AddStudentDialog";
 
 interface QueueItem {
   id: number;
@@ -198,35 +197,13 @@ const Admin = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <Card className="w-full max-w-md p-6 space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold">Admin Login</h1>
-            <p className="text-gray-500">Enter your credentials to manage the queue</p>
-          </div>
-          
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-          </form>
-        </Card>
-      </div>
+      <LoginForm
+        username={username}
+        password={password}
+        onUsernameChange={setUsername}
+        onPasswordChange={setPassword}
+        onSubmit={handleLogin}
+      />
     );
   }
 
@@ -236,47 +213,11 @@ const Admin = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Queue Management</h1>
           <div className="flex gap-2">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <UserPlus className="h-4 w-4" />
-                  Add Student
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add New Student to Queue</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 mt-4">
-                  <Input
-                    placeholder="Full Name"
-                    value={newStudent.name}
-                    onChange={(e) => setNewStudent(prev => ({ ...prev, name: e.target.value }))}
-                  />
-                  <Input
-                    placeholder="Student Number (10 digits)"
-                    value={newStudent.studentNumber}
-                    onChange={(e) => setNewStudent(prev => ({ 
-                      ...prev, 
-                      studentNumber: e.target.value.replace(/\D/g, "").slice(0, 10)
-                    }))}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                  />
-                  <Textarea
-                    placeholder="Reason for Visit"
-                    value={newStudent.reason}
-                    onChange={(e) => setNewStudent(prev => ({ ...prev, reason: e.target.value }))}
-                    className="resize-none"
-                    rows={3}
-                  />
-                  <Button onClick={addStudent} className="w-full">
-                    Add to Queue
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <AddStudentDialog
+              newStudent={newStudent}
+              onNewStudentChange={setNewStudent}
+              onAddStudent={addStudent}
+            />
             <Button
               variant="outline"
               onClick={exportToCSV}
@@ -296,32 +237,15 @@ const Admin = () => {
 
         <div className="grid gap-4">
           {queueItems.map((item) => (
-            <Card key={item.id} className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-gray-500" />
-                    <h3 className="font-medium">{item.name}</h3>
-                    <span className="text-sm text-gray-500">({item.studentNumber})</span>
-                  </div>
-                  <p className="text-sm text-gray-600">{item.reason}</p>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <Clock className="h-4 w-4" />
-                    <span>Joined: {new Date(item.joinedAt).toLocaleTimeString()}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeFromQueue(item.id)}
-                  >
-                    <X className="h-4 w-4" />
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            <QueueItemCard
+              key={item.id}
+              id={item.id}
+              name={item.name}
+              studentNumber={item.studentNumber}
+              reason={item.reason}
+              joinedAt={item.joinedAt}
+              onRemove={removeFromQueue}
+            />
           ))}
         </div>
       </div>
