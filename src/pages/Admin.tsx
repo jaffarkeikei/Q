@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,8 +60,14 @@ const Admin = () => {
     const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
     const dateStr = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     
-    // Create CSV content with headers and data (no title row)
-    const headers = ["Student Number", "Name", "Reason", "Position", "Joined At"];
+    const headerRow = [
+      'Student Number',
+      '<th bgcolor="#006400">Name</th>',
+      'Reason',
+      'Position',
+      'Joined At'
+    ];
+
     const csvData = queueItems.map(item => [
       item.studentNumber,
       item.name,
@@ -71,33 +76,15 @@ const Admin = () => {
       new Date(item.joinedAt).toLocaleString()
     ]);
 
-    // Add headers and data (without title and empty row)
-    const csvContent = [
-      headers,
-      ...csvData
-    ];
-
-    // Convert to CSV string with formatting
     const csvString = [
-      'sep=,', // Excel separator line for proper formatting
-      csvContent.map((row, index) => {
-        // Apply different column widths and colors using Excel formatting
-        if (index === 0) {
-          // Header row
-          return row.map((cell, colIndex) => {
-            if (colIndex === 0) return `"${cell}"`.padEnd(15); // Student Number - smaller width
-            if (colIndex === 1) return `"${cell}"`; // Name - default width with green fill in Excel
-            return `"${cell}"`; // Other columns - default width
-          }).join(',');
-        } else {
-          // Data rows
-          return row.map((cell, colIndex) => {
-            if (colIndex === 0) return `"${cell}"`.padEnd(15); // Student Number - smaller width
-            if (colIndex === 1) return `"${cell}"`; // Name - default width
-            return `"${cell}"`; // Other columns - default width
-          }).join(',');
-        }
-      }).join('\n')
+      'sep=,',
+      headerRow.join(','),
+      ...csvData.map(row => 
+        row.map((cell, colIndex) => {
+          if (colIndex === 0) return `"${cell}"`.padEnd(15);
+          return `"${cell}"`;
+        }).join(',')
+      )
     ].join('\n');
 
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
