@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { QueueItem, ScheduleSettings } from "@/types/queue";
@@ -144,7 +145,10 @@ export const useQueueManagement = (maxQueueSize: number, schedule: ScheduleSetti
       return;
     }
 
-    if (!advisor.isAvailable && !queueItems.find(item => item.id === studentId)?.assignedAdvisor === newAdvisor) {
+    const currentStudent = queueItems.find(item => item.id === studentId);
+    const isCurrentAdvisor = currentStudent?.assignedAdvisor === newAdvisor;
+
+    if (!advisor.isAvailable && !isCurrentAdvisor) {
       toast({
         title: "Error",
         description: "Selected advisor is not available",

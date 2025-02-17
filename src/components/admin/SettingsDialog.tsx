@@ -88,7 +88,7 @@ export const SettingsDialog = ({
           Settings
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Queue Settings</DialogTitle>
         </DialogHeader>
@@ -183,14 +183,14 @@ export const SettingsDialog = ({
                 </Button>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
                 {tempSchedule.advisors.map((advisor) => (
                   <div
                     key={advisor.id}
                     className="flex items-center justify-between p-2 border rounded-md"
                   >
-                    <span className="font-medium">{advisor.name}</span>
-                    <div className="flex items-center gap-2">
+                    <span className="font-medium truncate mr-2">{advisor.name}</span>
+                    <div className="flex items-center gap-2 shrink-0">
                       <Button
                         variant={advisor.isAvailable ? "default" : "secondary"}
                         size="sm"
