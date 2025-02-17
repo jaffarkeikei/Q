@@ -1,69 +1,127 @@
-# Welcome to your Lovable project
 
-## Project info
+# QueueHub - Student Advisor Queue Management System
 
-**URL**: https://lovable.dev/projects/1d1c4980-b41a-4dfd-9ff3-06f92ac7d200
+## Overview
 
-## How can I edit this code?
+QueueHub is a modern web application designed to streamline the student advising process at educational institutions. It provides an efficient way for students to join a queue for academic advising while automatically managing advisor assignments and wait times.
 
-There are several ways of editing your application.
+## Features
 
-**Use Lovable**
+- **Smart Queue Management**
+  - Automatic advisor assignment based on availability and workload
+  - Real-time wait time estimates
+  - Room number notifications
+  - Maximum queue size control
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1d1c4980-b41a-4dfd-9ff3-06f92ac7d200) and start prompting.
+- **Student Features**
+  - Easy queue registration with name and student number validation
+  - Real-time position tracking
+  - Automatic advisor and room assignment
+  - Clear notifications and status updates
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Form Validation**
+  - Full name validation (first and last name required)
+  - Student number validation (10 digits required)
+  - Name format validation (letters, hyphens, and apostrophes only)
+  - Required fields validation
 
-**Use your preferred IDE**
+- **User Interface**
+  - Clean, modern design
+  - Responsive layout
+  - Toast notifications for important updates
+  - Animated components for better user experience
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Technology Stack
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Frontend Framework**: React
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Type Safety**: TypeScript
+- **State Management**: React Query
+- **Toast Notifications**: Custom toast system
 
-Follow these steps:
+## Getting Started
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Prerequisites
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- Node.js (v14 or higher)
+- npm or yarn package manager
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Installation
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+1. Clone the repository:
+```bash
+git clone <repository-url>
 ```
 
-**Edit a file directly in GitHub**
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. Start the development server:
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-**Use GitHub Codespaces**
+4. Open your browser and navigate to `http://localhost:8080`
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Usage
 
-## What technologies are used for this project?
+### For Students
 
-This project is built with .
+1. Navigate to the main page
+2. Fill in your details:
+   - Full name (first and last name)
+   - Student number (10 digits)
+   - Reason for visit
+3. Click "Join Queue"
+4. You'll receive a notification with your assigned advisor and room number
+5. Monitor your position in the queue
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### For Administrators
 
-## How can I deploy this project?
+1. Navigate to `/admin`
+2. Manage the queue:
+   - View current queue status
+   - Adjust advisor availability
+   - Remove students from queue
+   - Change advisor assignments
+   - Monitor queue statistics
 
-Simply open [Lovable](https://lovable.dev/projects/1d1c4980-b41a-4dfd-9ff3-06f92ac7d200) and click on Share -> Publish.
+## Project Structure
 
-## I want to use a custom domain - is that possible?
+```
+src/
+├── components/         # React components
+│   ├── ui/            # UI components from shadcn/ui
+│   └── ...           
+├── hooks/             # Custom React hooks
+├── pages/             # Page components
+├── types/             # TypeScript type definitions
+└── lib/              # Utility functions and configurations
+```
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built with [Lovable](https://lovable.dev)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
+
