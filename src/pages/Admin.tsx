@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { X, User, Clock } from "lucide-react";
+import { X, User, Clock, Download } from "lucide-react";
 
 interface QueueItem {
   id: number;
@@ -29,7 +28,6 @@ const Admin = () => {
       position: 1,
       joinedAt: new Date(),
     },
-    // Add more mock data as needed
   ]);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -54,6 +52,38 @@ const Admin = () => {
     toast({
       title: "Removed from queue",
       description: "Student has been removed from the queue",
+    });
+  };
+
+  const exportToCSV = () => {
+    const headers = ["Name", "Student Number", "Reason", "Position", "Joined At"];
+    const csvData = queueItems.map(item => [
+      item.name,
+      item.studentNumber,
+      item.reason,
+      item.position.toString(),
+      new Date(item.joinedAt).toLocaleString()
+    ]);
+
+    csvData.unshift(headers);
+
+    const csvString = csvData.map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `queue-data-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    toast({
+      title: "Export Successful",
+      description: "Queue data has been exported to CSV",
     });
   };
 
@@ -96,12 +126,22 @@ const Admin = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Queue Management</h1>
-          <Button
-            variant="outline"
-            onClick={() => setIsLoggedIn(false)}
-          >
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={exportToCSV}
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Export CSV
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setIsLoggedIn(false)}
+            >
+              Logout
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-4">
