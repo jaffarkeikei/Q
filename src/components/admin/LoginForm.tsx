@@ -34,7 +34,7 @@ export const LoginForm = ({
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Input
-              placeholder="Username"
+              placeholder="admin"
               value={username}
               onChange={(e) => onUsernameChange(e.target.value)}
             />
@@ -42,7 +42,7 @@ export const LoginForm = ({
           <div className="space-y-2">
             <Input
               type="password"
-              placeholder="Password"
+              placeholder="123"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
             />
