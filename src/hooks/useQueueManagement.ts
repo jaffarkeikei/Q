@@ -120,8 +120,8 @@ export const useQueueManagement = (maxQueueSize: number, schedule: ScheduleSetti
     }]);
 
     toast({
-      title: "Success",
-      description: `Student added to queue and assigned to ${selectedAdvisor.name}`,
+      title: "Added to Queue",
+      description: `You've been assigned to ${selectedAdvisor.name} in Room ${selectedAdvisor.roomNumber}`,
     });
     return true;
   };
@@ -165,7 +165,7 @@ export const useQueueManagement = (maxQueueSize: number, schedule: ScheduleSetti
 
     toast({
       title: "Advisor Changed",
-      description: `Student reassigned to ${newAdvisor}`,
+      description: `Reassigned to ${advisor.name} in Room ${advisor.roomNumber}`,
     });
 
     updateQueueEstimates();
