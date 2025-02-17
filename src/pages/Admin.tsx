@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Play, Pause } from "lucide-react";
@@ -16,12 +16,23 @@ interface QueueItem {
   joinedAt: Date;
 }
 
+interface ScheduleSettings {
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+}
+
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isQueueOpen, setIsQueueOpen] = useState(true);
-  const [maxQueueSize, setMaxQueueSize] = useState(30); // Default max size
+  const [maxQueueSize, setMaxQueueSize] = useState(30);
+  const [schedule, setSchedule] = useState<ScheduleSettings>({
+    dayOfWeek: "Monday",
+    startTime: "09:00",
+    endTime: "17:00"
+  });
   const [newStudent, setNewStudent] = useState({
     name: "",
     studentNumber: "",
@@ -78,6 +89,51 @@ const Admin = () => {
       joinedAt: new Date(),
     }
   ]);
+
+  useEffect(() => {
+    const checkSchedule = () => {
+      const now = new Date();
+      const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
+      const currentTime = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      });
+
+      if (currentDay === schedule.dayOfWeek) {
+        if (currentTime >= schedule.startTime && currentTime <= schedule.endTime) {
+          if (!isQueueOpen) {
+            setIsQueueOpen(true);
+            toast({
+              title: "Queue Opened",
+              description: "Queue schedule has started",
+            });
+          }
+        } else {
+          if (isQueueOpen) {
+            setIsQueueOpen(false);
+            toast({
+              title: "Queue Closed",
+              description: "Queue is now outside operating hours",
+            });
+          }
+        }
+      }
+    };
+
+    const interval = setInterval(checkSchedule, 60000);
+    checkSchedule();
+
+    return () => clearInterval(interval);
+  }, [schedule, isQueueOpen, toast]);
+
+  const handleScheduleChange = (newSchedule: ScheduleSettings) => {
+    setSchedule(newSchedule);
+    toast({
+      title: "Schedule Updated",
+      description: `Queue will operate on ${newSchedule.dayOfWeek}s from ${newSchedule.startTime} to ${newSchedule.endTime}`,
+    });
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -260,6 +316,9 @@ const Admin = () => {
             <p className="text-sm text-gray-500">
               Queue Capacity: {queueItems.length} / {maxQueueSize}
             </p>
+            <p className="text-sm text-gray-500">
+              Schedule: {schedule.dayOfWeek}s, {schedule.startTime} - {schedule.endTime}
+            </p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -287,6 +346,8 @@ const Admin = () => {
             <SettingsDialog
               maxQueueSize={maxQueueSize}
               onMaxQueueSizeChange={handleMaxQueueSizeChange}
+              schedule={schedule}
+              onScheduleChange={handleScheduleChange}
             />
             <Button
               variant="outline"
