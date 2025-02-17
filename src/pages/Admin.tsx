@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,25 +57,37 @@ const Admin = () => {
   };
 
   const exportToCSV = () => {
-    const headers = ["Name", "Student Number", "Reason", "Position", "Joined At"];
+    const today = new Date();
+    const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+    const dateStr = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const title = `New College Registrar's Office Hours (${dayName}, ${dateStr})`;
+    
+    // Create CSV content with title
+    const headers = ["Student Number", "Name", "Reason", "Position", "Joined At"];
     const csvData = queueItems.map(item => [
-      item.name,
       item.studentNumber,
+      item.name,
       item.reason,
       item.position.toString(),
       new Date(item.joinedAt).toLocaleString()
     ]);
 
-    csvData.unshift(headers);
+    // Add title and headers
+    const csvContent = [
+      [title],
+      [], // Empty row after title
+      headers,
+      ...csvData
+    ];
 
-    const csvString = csvData.map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+    const csvString = csvContent.map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
 
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `queue-data-${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute("download", `queue-data-${today.toISOString().split('T')[0]}.csv`);
       link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
