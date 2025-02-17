@@ -63,10 +63,10 @@ const Admin = () => {
     const title = `New College Registrar's Office Hours (${dayName}, ${dateStr})`;
     
     // Create CSV content with title
-    const headers = ["Name", "Student Number", "Reason", "Position", "Joined At"];
+    const headers = ["Student Number", "Name", "Reason", "Position", "Joined At"];
     const csvData = queueItems.map(item => [
-      item.name,
       item.studentNumber,
+      item.name,
       item.reason,
       item.position.toString(),
       new Date(item.joinedAt).toLocaleString()
