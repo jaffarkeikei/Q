@@ -3,14 +3,22 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Settings } from "lucide-react";
+import { Settings, Plus, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface Advisor {
+  id: string;
+  name: string;
+  isAvailable: boolean;
+}
 
 interface ScheduleSettings {
   dayOfWeek: string;
   startTime: string;
   endTime: string;
+  timePerStudent: number; // in minutes
+  advisors: Advisor[];
 }
 
 interface SettingsDialogProps {
@@ -28,10 +36,44 @@ export const SettingsDialog = ({
 }: SettingsDialogProps) => {
   const [tempMaxSize, setTempMaxSize] = useState(maxQueueSize);
   const [tempSchedule, setTempSchedule] = useState<ScheduleSettings>(schedule);
+  const [newAdvisorName, setNewAdvisorName] = useState("");
 
   const handleSave = () => {
     onMaxQueueSizeChange(tempMaxSize);
     onScheduleChange(tempSchedule);
+  };
+
+  const addAdvisor = () => {
+    if (!newAdvisorName.trim()) return;
+    
+    setTempSchedule(prev => ({
+      ...prev,
+      advisors: [
+        ...prev.advisors,
+        {
+          id: crypto.randomUUID(),
+          name: newAdvisorName.trim(),
+          isAvailable: true
+        }
+      ]
+    }));
+    setNewAdvisorName("");
+  };
+
+  const removeAdvisor = (id: string) => {
+    setTempSchedule(prev => ({
+      ...prev,
+      advisors: prev.advisors.filter(advisor => advisor.id !== id)
+    }));
+  };
+
+  const toggleAdvisorAvailability = (id: string) => {
+    setTempSchedule(prev => ({
+      ...prev,
+      advisors: prev.advisors.map(advisor =>
+        advisor.id === id ? { ...advisor, isAvailable: !advisor.isAvailable } : advisor
+      )
+    }));
   };
 
   const days = [
@@ -107,6 +149,65 @@ export const SettingsDialog = ({
                     onChange={(e) => setTempSchedule({ ...tempSchedule, endTime: e.target.value })}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="timePerStudent">Time Per Student (minutes)</Label>
+                <Input
+                  id="timePerStudent"
+                  type="number"
+                  min="1"
+                  value={tempSchedule.timePerStudent}
+                  onChange={(e) => setTempSchedule({
+                    ...tempSchedule,
+                    timePerStudent: Math.max(1, parseInt(e.target.value) || 1)
+                  })}
+                  placeholder="Enter time per student in minutes"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h4 className="font-medium">Advisors</h4>
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter advisor name"
+                  value={newAdvisorName}
+                  onChange={(e) => setNewAdvisorName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addAdvisor()}
+                />
+                <Button onClick={addAdvisor} size="sm">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                {tempSchedule.advisors.map((advisor) => (
+                  <div
+                    key={advisor.id}
+                    className="flex items-center justify-between p-2 border rounded-md"
+                  >
+                    <span className="font-medium">{advisor.name}</span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant={advisor.isAvailable ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => toggleAdvisorAvailability(advisor.id)}
+                      >
+                        {advisor.isAvailable ? "Available" : "Unavailable"}
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeAdvisor(advisor.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

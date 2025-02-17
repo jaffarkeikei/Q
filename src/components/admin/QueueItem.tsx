@@ -10,6 +10,8 @@ interface QueueItemProps {
   reason: string;
   joinedAt: Date;
   position: number;
+  estimatedWaitTime?: number;
+  assignedAdvisor?: string;
   onRemove: (id: number) => void;
 }
 
@@ -20,6 +22,8 @@ export const QueueItemCard = ({
   reason,
   joinedAt,
   position,
+  estimatedWaitTime,
+  assignedAdvisor,
   onRemove,
 }: QueueItemProps) => {
   return (
@@ -35,9 +39,21 @@ export const QueueItemCard = ({
             <span className="text-sm text-gray-500">({studentNumber})</span>
           </div>
           <p className="text-sm text-gray-600">{reason}</p>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Clock className="h-4 w-4" />
-            <span>Joined: {new Date(joinedAt).toLocaleTimeString()}</span>
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              <span>Joined: {new Date(joinedAt).toLocaleTimeString()}</span>
+            </div>
+            {estimatedWaitTime !== undefined && (
+              <span className="text-blue-600">
+                Est. Wait: ~{estimatedWaitTime} minutes
+              </span>
+            )}
+            {assignedAdvisor && (
+              <span className="text-green-600">
+                Advisor: {assignedAdvisor}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">

@@ -14,12 +14,22 @@ interface QueueItem {
   reason: string;
   position: number;
   joinedAt: Date;
+  estimatedWaitTime?: number;
+  assignedAdvisor?: string;
+}
+
+interface Advisor {
+  id: string;
+  name: string;
+  isAvailable: boolean;
 }
 
 interface ScheduleSettings {
   dayOfWeek: string;
   startTime: string;
   endTime: string;
+  timePerStudent: number;
+  advisors: Advisor[];
 }
 
 const Admin = () => {
@@ -31,7 +41,9 @@ const Admin = () => {
   const [schedule, setSchedule] = useState<ScheduleSettings>({
     dayOfWeek: "Monday",
     startTime: "09:00",
-    endTime: "17:00"
+    endTime: "17:00",
+    timePerStudent: 15,
+    advisors: []
   });
   const [newStudent, setNewStudent] = useState({
     name: "",
@@ -47,6 +59,8 @@ const Admin = () => {
       reason: "Course enrollment",
       position: 1,
       joinedAt: new Date(),
+      estimatedWaitTime: 0,
+      assignedAdvisor: ""
     },
     {
       id: 2,
@@ -55,6 +69,8 @@ const Admin = () => {
       reason: "Program requirements",
       position: 2,
       joinedAt: new Date(),
+      estimatedWaitTime: 0,
+      assignedAdvisor: ""
     },
     {
       id: 3,
@@ -63,6 +79,8 @@ const Admin = () => {
       reason: "Course withdrawal",
       position: 3,
       joinedAt: new Date(),
+      estimatedWaitTime: 0,
+      assignedAdvisor: ""
     },
     {
       id: 4,
@@ -71,6 +89,8 @@ const Admin = () => {
       reason: "Academic advising",
       position: 4,
       joinedAt: new Date(),
+      estimatedWaitTime: 0,
+      assignedAdvisor: ""
     },
     {
       id: 5,
@@ -79,6 +99,8 @@ const Admin = () => {
       reason: "Transfer credits",
       position: 5,
       joinedAt: new Date(),
+      estimatedWaitTime: 0,
+      assignedAdvisor: ""
     },
     {
       id: 6,
@@ -87,45 +109,33 @@ const Admin = () => {
       reason: "Graduation requirements",
       position: 6,
       joinedAt: new Date(),
+      estimatedWaitTime: 0,
+      assignedAdvisor: ""
     }
   ]);
 
+  const updateQueueEstimates = () => {
+    const availableAdvisors = schedule.advisors.filter(a => a.isAvailable);
+    if (availableAdvisors.length === 0) return;
+
+    const updatedQueue = queueItems.map((item, index) => {
+      const advisorIndex = index % availableAdvisors.length;
+      const studentsAhead = Math.floor(index / availableAdvisors.length);
+      const estimatedWaitTime = studentsAhead * schedule.timePerStudent;
+
+      return {
+        ...item,
+        estimatedWaitTime,
+        assignedAdvisor: availableAdvisors[advisorIndex].name
+      };
+    });
+
+    setQueueItems(updatedQueue);
+  };
+
   useEffect(() => {
-    const checkSchedule = () => {
-      const now = new Date();
-      const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
-      const currentTime = now.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: false 
-      });
-
-      if (currentDay === schedule.dayOfWeek) {
-        if (currentTime >= schedule.startTime && currentTime <= schedule.endTime) {
-          if (!isQueueOpen) {
-            setIsQueueOpen(true);
-            toast({
-              title: "Queue Opened",
-              description: "Queue schedule has started",
-            });
-          }
-        } else {
-          if (isQueueOpen) {
-            setIsQueueOpen(false);
-            toast({
-              title: "Queue Closed",
-              description: "Queue is now outside operating hours",
-            });
-          }
-        }
-      }
-    };
-
-    const interval = setInterval(checkSchedule, 60000);
-    checkSchedule();
-
-    return () => clearInterval(interval);
-  }, [schedule, isQueueOpen, toast]);
+    updateQueueEstimates();
+  }, [schedule.advisors, schedule.timePerStudent]);
 
   const handleScheduleChange = (newSchedule: ScheduleSettings) => {
     setSchedule(newSchedule);
@@ -205,8 +215,21 @@ const Admin = () => {
       return;
     }
 
+    const availableAdvisors = schedule.advisors.filter(a => a.isAvailable);
+    if (availableAdvisors.length === 0) {
+      toast({
+        title: "Error",
+        description: "No advisors are currently available",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const newId = Math.max(...queueItems.map(item => item.id), 0) + 1;
     const newPosition = Math.max(...queueItems.map(item => item.position), 0) + 1;
+    const advisorIndex = (queueItems.length) % availableAdvisors.length;
+    const studentsAhead = Math.floor(queueItems.length / availableAdvisors.length);
+    const estimatedWaitTime = studentsAhead * schedule.timePerStudent;
 
     setQueueItems(prev => [...prev, {
       id: newId,
@@ -214,7 +237,9 @@ const Admin = () => {
       studentNumber: newStudent.studentNumber,
       reason: newStudent.reason,
       position: newPosition,
-      joinedAt: new Date()
+      joinedAt: new Date(),
+      estimatedWaitTime,
+      assignedAdvisor: availableAdvisors[advisorIndex].name
     }]);
 
     setNewStudent({
@@ -239,7 +264,9 @@ const Admin = () => {
       '<th bgcolor="#006400">Name</th>',
       'Reason',
       'Position',
-      'Joined At'
+      'Joined At',
+      'Estimated Wait Time (minutes)',
+      'Assigned Advisor'
     ];
 
     const csvData = queueItems.map(item => [
@@ -247,7 +274,9 @@ const Admin = () => {
       item.name,
       item.reason,
       item.position.toString(),
-      new Date(item.joinedAt).toLocaleString()
+      new Date(item.joinedAt).toLocaleString(),
+      item.estimatedWaitTime,
+      item.assignedAdvisor
     ]);
 
     const csvString = [
@@ -319,6 +348,9 @@ const Admin = () => {
             <p className="text-sm text-gray-500">
               Schedule: {schedule.dayOfWeek}s, {schedule.startTime} - {schedule.endTime}
             </p>
+            <p className="text-sm text-gray-500">
+              Available Advisors: {schedule.advisors.filter(a => a.isAvailable).length}
+            </p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -370,12 +402,7 @@ const Admin = () => {
           {queueItems.map((item) => (
             <QueueItemCard
               key={item.id}
-              id={item.id}
-              name={item.name}
-              studentNumber={item.studentNumber}
-              reason={item.reason}
-              joinedAt={item.joinedAt}
-              position={item.position}
+              {...item}
               onRemove={removeFromQueue}
             />
           ))}
