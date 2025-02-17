@@ -44,6 +44,17 @@ export const useQueueManagement = (maxQueueSize: number, schedule: ScheduleSetti
   }, [schedule.advisors, schedule.timePerStudent, queueItems.length]);
 
   const addStudent = (newStudent: { name: string; studentNumber: string; reason: string }) => {
+    const nameParts = newStudent.name.trim().split(/\s+/);
+    
+    if (nameParts.length < 2) {
+      toast({
+        title: "Error",
+        description: "Please provide both first and last name",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     if (!newStudent.name || !newStudent.studentNumber || !newStudent.reason) {
       toast({
         title: "Error",

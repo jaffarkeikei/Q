@@ -18,6 +18,16 @@ const JoinQueueForm = ({ onJoin }: JoinQueueFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    const nameParts = name.trim().split(/\s+/);
+    if (nameParts.length < 2) {
+      toast({
+        title: "Error",
+        description: "Please provide both first and last name",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!name || !studentNumber || !reason) {
       toast({
         title: "Error",
@@ -46,7 +56,7 @@ const JoinQueueForm = ({ onJoin }: JoinQueueFormProps) => {
     <form onSubmit={handleSubmit} className="space-y-4 animate-slide-up">
       <div>
         <Input
-          placeholder="Full Name"
+          placeholder="Full Name (First and Last)"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="bg-white/90 border-queue-border"
