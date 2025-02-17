@@ -3,7 +3,7 @@
 
 ## Overview
 
-QueueHub is a modern web application designed to streamline the student advising process at educational institutions. It provides an efficient way for students to join a queue for academic advising while automatically managing advisor assignments and wait times.
+Q is a modern web application designed to streamline the student advising process at educational institutions. It provides an efficient way for students to join a queue for academic advising while automatically managing advisor assignments and wait times.
 
 ## Features
 
@@ -94,15 +94,13 @@ yarn dev
    - Change advisor assignments
    - Monitor queue statistics
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built with [Lovable](https://lovable.dev)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
 
