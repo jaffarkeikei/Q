@@ -47,10 +47,6 @@ export const useScheduleManagement = (initialSchedule: ScheduleSettings) => {
 
   const handleScheduleChange = (newSchedule: ScheduleSettings) => {
     setSchedule(newSchedule);
-    toast({
-      title: "Schedule Updated",
-      description: `Queue will operate on ${newSchedule.dayOfWeek}s from ${newSchedule.startTime} to ${newSchedule.endTime}`,
-    });
   };
 
   const toggleQueue = () => {
