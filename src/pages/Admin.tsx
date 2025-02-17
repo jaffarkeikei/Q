@@ -1,10 +1,11 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { X, User, Clock, Download } from "lucide-react";
+import { X, User, Clock, Download, UserPlus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 interface QueueItem {
   id: number;
@@ -19,6 +20,11 @@ const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [newStudent, setNewStudent] = useState({
+    name: "",
+    studentNumber: "",
+    reason: ""
+  });
   const { toast } = useToast();
   const [queueItems, setQueueItems] = useState<QueueItem[]>([
     {
@@ -93,6 +99,49 @@ const Admin = () => {
     toast({
       title: "Removed from queue",
       description: "Student has been removed from the queue",
+    });
+  };
+
+  const addStudent = () => {
+    if (!newStudent.name || !newStudent.studentNumber || !newStudent.reason) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newStudent.studentNumber.length !== 10) {
+      toast({
+        title: "Error",
+        description: "Student number must be 10 digits",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newId = Math.max(...queueItems.map(item => item.id), 0) + 1;
+    const newPosition = Math.max(...queueItems.map(item => item.position), 0) + 1;
+
+    setQueueItems(prev => [...prev, {
+      id: newId,
+      name: newStudent.name,
+      studentNumber: newStudent.studentNumber,
+      reason: newStudent.reason,
+      position: newPosition,
+      joinedAt: new Date()
+    }]);
+
+    setNewStudent({
+      name: "",
+      studentNumber: "",
+      reason: ""
+    });
+
+    toast({
+      title: "Success",
+      description: "Student added to queue",
     });
   };
 
@@ -187,6 +236,47 @@ const Admin = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Queue Management</h1>
           <div className="flex gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <UserPlus className="h-4 w-4" />
+                  Add Student
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Student to Queue</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 mt-4">
+                  <Input
+                    placeholder="Full Name"
+                    value={newStudent.name}
+                    onChange={(e) => setNewStudent(prev => ({ ...prev, name: e.target.value }))}
+                  />
+                  <Input
+                    placeholder="Student Number (10 digits)"
+                    value={newStudent.studentNumber}
+                    onChange={(e) => setNewStudent(prev => ({ 
+                      ...prev, 
+                      studentNumber: e.target.value.replace(/\D/g, "").slice(0, 10)
+                    }))}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                  />
+                  <Textarea
+                    placeholder="Reason for Visit"
+                    value={newStudent.reason}
+                    onChange={(e) => setNewStudent(prev => ({ ...prev, reason: e.target.value }))}
+                    className="resize-none"
+                    rows={3}
+                  />
+                  <Button onClick={addStudent} className="w-full">
+                    Add to Queue
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Button
               variant="outline"
               onClick={exportToCSV}
