@@ -15,6 +15,12 @@ const JoinQueueForm = ({ onJoin }: JoinQueueFormProps) => {
   const [reason, setReason] = useState("");
   const { toast } = useToast();
 
+  const isValidName = (name: string): boolean => {
+    // Allow letters, spaces, hyphens, and apostrophes
+    const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/;
+    return nameRegex.test(name.trim());
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -26,6 +32,18 @@ const JoinQueueForm = ({ onJoin }: JoinQueueFormProps) => {
         variant: "destructive",
       });
       return;
+    }
+
+    // Validate each part of the name
+    for (const part of nameParts) {
+      if (!isValidName(part)) {
+        toast({
+          title: "Error",
+          description: "Names can only contain letters, hyphens, and apostrophes",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     if (!name || !studentNumber || !reason) {
@@ -52,13 +70,19 @@ const JoinQueueForm = ({ onJoin }: JoinQueueFormProps) => {
     setReason("");
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow letters, spaces, hyphens, and apostrophes
+    const value = e.target.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s'-]/g, '');
+    setName(value);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 animate-slide-up">
       <div>
         <Input
           placeholder="Full Name (First and Last)"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleNameChange}
           className="bg-white/90 border-queue-border"
         />
       </div>

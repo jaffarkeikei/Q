@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { QueueItem, ScheduleSettings } from "@/types/queue";
@@ -43,6 +42,11 @@ export const useQueueManagement = (maxQueueSize: number, schedule: ScheduleSetti
     updateQueueEstimates();
   }, [schedule.advisors, schedule.timePerStudent, queueItems.length]);
 
+  const isValidName = (name: string): boolean => {
+    const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'\s][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/;
+    return nameRegex.test(name.trim());
+  };
+
   const addStudent = (newStudent: { name: string; studentNumber: string; reason: string }) => {
     const nameParts = newStudent.name.trim().split(/\s+/);
     
@@ -53,6 +57,17 @@ export const useQueueManagement = (maxQueueSize: number, schedule: ScheduleSetti
         variant: "destructive",
       });
       return false;
+    }
+
+    for (const part of nameParts) {
+      if (!isValidName(part)) {
+        toast({
+          title: "Error",
+          description: "Names can only contain letters, hyphens, and apostrophes",
+          variant: "destructive",
+        });
+        return false;
+      }
     }
 
     if (!newStudent.name || !newStudent.studentNumber || !newStudent.reason) {
