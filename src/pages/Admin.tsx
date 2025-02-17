@@ -118,15 +118,29 @@ const Admin = () => {
     const availableAdvisors = schedule.advisors.filter(a => a.isAvailable);
     if (availableAdvisors.length === 0) return;
 
+    const advisorAssignments = new Map<string, number>();
+    availableAdvisors.forEach(advisor => advisorAssignments.set(advisor.name, 0));
+
     const updatedQueue = queueItems.map((item, index) => {
-      const advisorIndex = index % availableAdvisors.length;
-      const studentsAhead = Math.floor(index / availableAdvisors.length);
-      const estimatedWaitTime = studentsAhead * schedule.timePerStudent;
+      let selectedAdvisor = availableAdvisors[0];
+      let lowestLoad = advisorAssignments.get(selectedAdvisor.name) || 0;
+
+      availableAdvisors.forEach(advisor => {
+        const currentLoad = advisorAssignments.get(advisor.name) || 0;
+        if (currentLoad < lowestLoad) {
+          selectedAdvisor = advisor;
+          lowestLoad = currentLoad;
+        }
+      });
+
+      advisorAssignments.set(selectedAdvisor.name, lowestLoad + 1);
+
+      const estimatedWaitTime = lowestLoad * schedule.timePerStudent;
 
       return {
         ...item,
         estimatedWaitTime,
-        assignedAdvisor: availableAdvisors[advisorIndex].name
+        assignedAdvisor: selectedAdvisor.name
       };
     });
 
@@ -135,7 +149,7 @@ const Admin = () => {
 
   useEffect(() => {
     updateQueueEstimates();
-  }, [schedule.advisors, schedule.timePerStudent]);
+  }, [schedule.advisors, schedule.timePerStudent, queueItems.length]);
 
   const handleScheduleChange = (newSchedule: ScheduleSettings) => {
     setSchedule(newSchedule);
@@ -225,11 +239,32 @@ const Admin = () => {
       return;
     }
 
+    const advisorAssignments = new Map<string, number>();
+    availableAdvisors.forEach(advisor => advisorAssignments.set(advisor.name, 0));
+
+    queueItems.forEach(item => {
+      if (item.assignedAdvisor) {
+        advisorAssignments.set(
+          item.assignedAdvisor,
+          (advisorAssignments.get(item.assignedAdvisor) || 0) + 1
+        );
+      }
+    });
+
+    let selectedAdvisor = availableAdvisors[0];
+    let lowestLoad = advisorAssignments.get(selectedAdvisor.name) || 0;
+
+    availableAdvisors.forEach(advisor => {
+      const currentLoad = advisorAssignments.get(advisor.name) || 0;
+      if (currentLoad < lowestLoad) {
+        selectedAdvisor = advisor;
+        lowestLoad = currentLoad;
+      }
+    });
+
     const newId = Math.max(...queueItems.map(item => item.id), 0) + 1;
     const newPosition = Math.max(...queueItems.map(item => item.position), 0) + 1;
-    const advisorIndex = (queueItems.length) % availableAdvisors.length;
-    const studentsAhead = Math.floor(queueItems.length / availableAdvisors.length);
-    const estimatedWaitTime = studentsAhead * schedule.timePerStudent;
+    const estimatedWaitTime = lowestLoad * schedule.timePerStudent;
 
     setQueueItems(prev => [...prev, {
       id: newId,
@@ -239,7 +274,7 @@ const Admin = () => {
       position: newPosition,
       joinedAt: new Date(),
       estimatedWaitTime,
-      assignedAdvisor: availableAdvisors[advisorIndex].name
+      assignedAdvisor: selectedAdvisor.name
     }]);
 
     setNewStudent({
@@ -250,7 +285,7 @@ const Admin = () => {
 
     toast({
       title: "Success",
-      description: "Student added to queue",
+      description: `Student added to queue and assigned to ${selectedAdvisor.name}`,
     });
   };
 
