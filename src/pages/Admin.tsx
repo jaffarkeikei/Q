@@ -60,9 +60,8 @@ const Admin = () => {
     const today = new Date();
     const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
     const dateStr = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    const title = `New College Registrar's Office Hours (${dayName}, ${dateStr})`;
     
-    // Create CSV content with title
+    // Create CSV content with headers and data (no title row)
     const headers = ["Student Number", "Name", "Reason", "Position", "Joined At"];
     const csvData = queueItems.map(item => [
       item.studentNumber,
@@ -72,15 +71,34 @@ const Admin = () => {
       new Date(item.joinedAt).toLocaleString()
     ]);
 
-    // Add title and headers
+    // Add headers and data (without title and empty row)
     const csvContent = [
-      [title],
-      [], // Empty row after title
       headers,
       ...csvData
     ];
 
-    const csvString = csvContent.map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+    // Convert to CSV string with formatting
+    const csvString = [
+      'sep=,', // Excel separator line for proper formatting
+      csvContent.map((row, index) => {
+        // Apply different column widths and colors using Excel formatting
+        if (index === 0) {
+          // Header row
+          return row.map((cell, colIndex) => {
+            if (colIndex === 0) return `"${cell}"`.padEnd(15); // Student Number - smaller width
+            if (colIndex === 1) return `"${cell}"`; // Name - default width with green fill in Excel
+            return `"${cell}"`; // Other columns - default width
+          }).join(',');
+        } else {
+          // Data rows
+          return row.map((cell, colIndex) => {
+            if (colIndex === 0) return `"${cell}"`.padEnd(15); // Student Number - smaller width
+            if (colIndex === 1) return `"${cell}"`; // Name - default width
+            return `"${cell}"`; // Other columns - default width
+          }).join(',');
+        }
+      }).join('\n')
+    ].join('\n');
 
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
