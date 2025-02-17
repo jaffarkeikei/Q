@@ -9,6 +9,7 @@ interface QueueItemProps {
   studentNumber: string;
   reason: string;
   joinedAt: Date;
+  position: number;
   onRemove: (id: number) => void;
 }
 
@@ -18,6 +19,7 @@ export const QueueItemCard = ({
   studentNumber,
   reason,
   joinedAt,
+  position,
   onRemove,
 }: QueueItemProps) => {
   return (
@@ -25,6 +27,9 @@ export const QueueItemCard = ({
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">
+              {position}
+            </span>
             <User className="h-4 w-4 text-gray-500" />
             <h3 className="font-medium">{name}</h3>
             <span className="text-sm text-gray-500">({studentNumber})</span>

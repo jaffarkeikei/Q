@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -244,9 +245,15 @@ const Admin = () => {
               studentNumber={item.studentNumber}
               reason={item.reason}
               joinedAt={item.joinedAt}
+              position={item.position}
               onRemove={removeFromQueue}
             />
           ))}
+        </div>
+
+        <div className="flex justify-between items-center p-4 bg-white rounded-lg shadow-sm">
+          <span className="text-sm text-gray-600">Total Students in Queue:</span>
+          <span className="text-lg font-semibold">{queueItems.length}</span>
         </div>
       </div>
     </div>
