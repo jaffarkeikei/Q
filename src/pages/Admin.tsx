@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { LoginForm } from "@/components/admin/LoginForm";
@@ -30,7 +29,7 @@ const Admin = () => {
 
   const { toast } = useToast();
   const { schedule, isQueueOpen, handleScheduleChange, toggleQueue } = useScheduleManagement(initialSchedule);
-  const { queueItems, addStudent, removeFromQueue } = useQueueManagement(maxQueueSize, schedule);
+  const { queueItems, addStudent, removeFromQueue, changeAdvisor } = useQueueManagement(maxQueueSize, schedule);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,7 +150,9 @@ const Admin = () => {
             <QueueItemCard
               key={item.id}
               {...item}
+              availableAdvisors={schedule.advisors}
               onRemove={removeFromQueue}
+              onChangeAdvisor={changeAdvisor}
             />
           ))}
         </div>

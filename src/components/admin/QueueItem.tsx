@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { User, Clock, X } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface QueueItemProps {
   id: number;
@@ -12,7 +13,9 @@ interface QueueItemProps {
   position: number;
   estimatedWaitTime?: number;
   assignedAdvisor?: string;
+  availableAdvisors: { name: string; isAvailable: boolean }[];
   onRemove: (id: number) => void;
+  onChangeAdvisor: (id: number, newAdvisor: string) => void;
 }
 
 export const QueueItemCard = ({
@@ -24,7 +27,9 @@ export const QueueItemCard = ({
   position,
   estimatedWaitTime,
   assignedAdvisor,
+  availableAdvisors,
   onRemove,
+  onChangeAdvisor,
 }: QueueItemProps) => {
   return (
     <Card className="p-4">
@@ -49,11 +54,27 @@ export const QueueItemCard = ({
                 Est. Wait: ~{estimatedWaitTime} minutes
               </span>
             )}
-            {assignedAdvisor && (
-              <span className="text-green-600">
-                Advisor: {assignedAdvisor}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              <Select
+                value={assignedAdvisor}
+                onValueChange={(value) => onChangeAdvisor(id, value)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select advisor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableAdvisors.map((advisor) => (
+                    <SelectItem 
+                      key={advisor.name} 
+                      value={advisor.name}
+                      disabled={!advisor.isAvailable && advisor.name !== assignedAdvisor}
+                    >
+                      {advisor.name} {!advisor.isAvailable && advisor.name !== assignedAdvisor && " (Unavailable)"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">

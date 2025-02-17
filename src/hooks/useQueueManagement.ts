@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { QueueItem, ScheduleSettings } from "@/types/queue";
@@ -134,9 +133,44 @@ export const useQueueManagement = (maxQueueSize: number, schedule: ScheduleSetti
     });
   };
 
+  const changeAdvisor = (studentId: number, newAdvisor: string) => {
+    const advisor = schedule.advisors.find(a => a.name === newAdvisor);
+    if (!advisor) {
+      toast({
+        title: "Error",
+        description: "Selected advisor not found",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!advisor.isAvailable && !queueItems.find(item => item.id === studentId)?.assignedAdvisor === newAdvisor) {
+      toast({
+        title: "Error",
+        description: "Selected advisor is not available",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setQueueItems(items => items.map(item => 
+      item.id === studentId 
+        ? { ...item, assignedAdvisor: newAdvisor }
+        : item
+    ));
+
+    toast({
+      title: "Advisor Changed",
+      description: `Student reassigned to ${newAdvisor}`,
+    });
+
+    updateQueueEstimates();
+  };
+
   return {
     queueItems,
     addStudent,
     removeFromQueue,
+    changeAdvisor,
   };
 };
