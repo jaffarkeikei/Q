@@ -5,6 +5,7 @@ import { Download, Play, Pause } from "lucide-react";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { QueueItemCard } from "@/components/admin/QueueItem";
 import { AddStudentDialog } from "@/components/admin/AddStudentDialog";
+import { SettingsDialog } from "@/components/admin/SettingsDialog";
 
 interface QueueItem {
   id: number;
@@ -20,6 +21,7 @@ const Admin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isQueueOpen, setIsQueueOpen] = useState(true);
+  const [maxQueueSize, setMaxQueueSize] = useState(30); // Default max size
   const [newStudent, setNewStudent] = useState({
     name: "",
     studentNumber: "",
@@ -102,6 +104,22 @@ const Admin = () => {
     });
   };
 
+  const handleMaxQueueSizeChange = (newSize: number) => {
+    setMaxQueueSize(newSize);
+    toast({
+      title: "Settings Updated",
+      description: `Maximum queue size set to ${newSize} students`,
+    });
+
+    if (queueItems.length >= newSize && isQueueOpen) {
+      setIsQueueOpen(false);
+      toast({
+        title: "Queue Automatically Closed",
+        description: "Current queue size exceeds the new maximum limit",
+      });
+    }
+  };
+
   const addStudent = () => {
     if (!newStudent.name || !newStudent.studentNumber || !newStudent.reason) {
       toast({
@@ -116,6 +134,16 @@ const Admin = () => {
       toast({
         title: "Error",
         description: "Student number must be 10 digits",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (queueItems.length >= maxQueueSize) {
+      setIsQueueOpen(false);
+      toast({
+        title: "Queue Full",
+        description: "Maximum queue size reached. Queue has been automatically closed.",
         variant: "destructive",
       });
       return;
@@ -229,6 +257,9 @@ const Admin = () => {
                 {isQueueOpen ? "Open" : "Closed"}
               </span>
             </p>
+            <p className="text-sm text-gray-500">
+              Queue Capacity: {queueItems.length} / {maxQueueSize}
+            </p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -252,6 +283,10 @@ const Admin = () => {
               newStudent={newStudent}
               onNewStudentChange={setNewStudent}
               onAddStudent={addStudent}
+            />
+            <SettingsDialog
+              maxQueueSize={maxQueueSize}
+              onMaxQueueSizeChange={handleMaxQueueSizeChange}
             />
             <Button
               variant="outline"
