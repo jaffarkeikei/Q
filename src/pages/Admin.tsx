@@ -87,7 +87,8 @@ const Admin = () => {
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `queue-data-${today.toISOString().split('T')[0]}.csv`);
+      const fileName = `New College Registrar's Office Hours (${dayName}, ${dateStr}).csv`;
+      link.setAttribute("download", fileName);
       link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
