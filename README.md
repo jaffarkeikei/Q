@@ -1,5 +1,5 @@
 
-# QueueHub - Student Advisor Queue Management System
+# Q - Student Advisor Queue Management System
 
 ## Overview
 
