@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,46 @@ const Admin = () => {
       position: 1,
       joinedAt: new Date(),
     },
+    {
+      id: 2,
+      name: "Jane Smith",
+      studentNumber: "2345678901",
+      reason: "Program requirements",
+      position: 2,
+      joinedAt: new Date(),
+    },
+    {
+      id: 3,
+      name: "Michael Johnson",
+      studentNumber: "3456789012",
+      reason: "Course withdrawal",
+      position: 3,
+      joinedAt: new Date(),
+    },
+    {
+      id: 4,
+      name: "Sarah Williams",
+      studentNumber: "4567890123",
+      reason: "Academic advising",
+      position: 4,
+      joinedAt: new Date(),
+    },
+    {
+      id: 5,
+      name: "David Brown",
+      studentNumber: "5678901234",
+      reason: "Transfer credits",
+      position: 5,
+      joinedAt: new Date(),
+    },
+    {
+      id: 6,
+      name: "Emily Davis",
+      studentNumber: "6789012345",
+      reason: "Graduation requirements",
+      position: 6,
+      joinedAt: new Date(),
+    }
   ]);
 
   const handleLogin = (e: React.FormEvent) => {
