@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import JoinQueueForm from "@/components/JoinQueueForm";
 import QueueCard from "@/components/QueueCard";
 import { useToast } from "@/hooks/use-toast";
@@ -42,6 +43,9 @@ const Index = () => {
         <div className="text-center mb-8 space-y-2">
           <h1 className="text-3xl font-bold">QueueHub</h1>
           <p className="text-gray-600">New College Registrar's Office</p>
+          <Link to="/admin" className="text-sm text-gray-500 hover:text-gray-700">
+            Admin Login
+          </Link>
         </div>
 
         {currentUser ? (
