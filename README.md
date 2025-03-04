@@ -52,7 +52,7 @@ Q is a modern web application designed to streamline the student advising proces
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/jaffarkeikei/Q.git
 ```
 
 2. Install dependencies:
