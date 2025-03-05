@@ -1,6 +1,8 @@
 
 # Q - Student Advisor Queue Management System
 
+[Q web app](https://queuehub-cde01.web.app)
+
 ## Overview
 
 Q is a modern web application designed to streamline the student advising process at educational institutions. It provides an efficient way for students to join a queue for academic advising while automatically managing advisor assignments and wait times.
